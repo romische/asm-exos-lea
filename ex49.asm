@@ -13,35 +13,41 @@ CMAIN:
     
     ;N6 low * N6 low
     mov eax, [N6]
-    mov ebx, [N6]
-    mul ebx             ;low in eax, high in edx
+    mul DWORD [N6]      ;low in eax, high in edx
     mov [N4], eax       ;low in N4
     mov ecx, edx        ;high in ecx
     mov edx, 0
     
     ;N6 low * N6 high
     mov eax, [N6+4]
-    mul ebx             ;low in eax, high in edx
+    mul DWORD [N6]      ;low in eax, high in edx
     
     ;add --> ((N4)low)high
-    add eax, eax
+    add ecx, eax
+    mov ebx, 0
+    adc ebx, 0          ;carry premiere add    
     add ecx, eax        ;res add in ecx
+    adc ebx, 0          ;carry 2nd add
     mov [N4+4], ecx
     mov ecx, edx        ;save high mul précédent 
-       
+    mov edx, 0
+    
     ;N6 high * N6 high
     mov eax, [N6+4]
-    mov ebx, [N6+4]
-    mul ebx             ;low in eax, high in edx
+    mul DWORD [N6+4]    ;low in eax, high in edx
     
     ;add --> ((N4)high)low
-    adc eax, ecx
-    adc eax, ecx        ;res adc in eax
+    add eax, ebx        ; add the carry to eax
+    mov ebx, 0
+    adc ebx, 0          ;carry premiere add
+    add eax, ecx
+    adc ebx, 0
+    add eax, ecx        ;res adc in eax
+    adc ebx, 0
     mov [N4+8], eax
     
     ;add --> ((N4)h)h
-    mov eax, 0
-    adc edx, eax
+    add edx, ebx        ; add the carry to edx
     mov [N4+12], edx  
      
     ret
