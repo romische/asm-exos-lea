@@ -12,11 +12,26 @@ global CMAIN
 CMAIN:
     mov ebp, esp; for correct debugging
     
-    mov eax, [N4]
-    mov eax, [N4+4]
-    mov eax, [N4+8]
-    mov eax, [N4+12]
-
-    ; ...
+    ;N6 low * N5
+    mov eax, [N6]
+    mov ebx, [N5]
+    mul ebx
+    mov [N4], eax       ;low in N4
+    mov ecx, edx        ;high in ecx
+    mov edx, 0
+    
+    
+    ;N6 high * N5
+    mov eax, [N6+4]
+    mul ebx             ;low in eax, high in edx
+    
+    ;add
+    add eax, ecx
+    mov [N4+4], eax
+    mov eax, 0
+    adc edx, eax        ;edx + 0 + carry
+    mov [N4+8], edx
+    adc eax, eax        ;si carry après adc edx, eax
+    mov [N4+12], eax
     
     ret
