@@ -9,20 +9,43 @@ section .text
 global CMAIN
 CMAIN:
     mov ebp, esp; for correct debugging
-    
-bcl:    
     mov eax, [N]
-    mov ebx, [V]
-    mov ecx, [V+4]
+
+loop1:
     dec eax
-    cmp ebx, ecx
-    ja i_sup_j
-    jmp bcl
+    cmp eax, 0
+    jz end
+    mov ebx, [V+eax*4]  ; ebx = V[i] 
+    ;init loop2
+    mov ecx, eax        ; j=i
     
-i_sup_j:
-    mov [V], ecx
-    mov [V+4], ebx
+loop2:
+    dec ecx
+    mov edx, [V+ecx*4]  ; edx = V[j]
+    cmp edx, ebx        ; compare V[j] and V[i]
+    ja swap
+
+end_loop2:    
+    cmp ecx, 0
+    jz loop1
+    jmp loop2
     
+swap:
+    mov [V+eax*4], edx
+    mov [V+ecx*4], ebx
+    mov ebx, edx
+    jmp end_loop2
+        
+end:
+    mov ecx, [N]
     
-end:    
+printloop:
+    dec ecx
+    mov eax, [V+ecx*4]
+    PRINT_UDEC 4, ecx
+    PRINT_UDEC 4, eax    
+    NEWLINE
+    cmp ecx, 0
+    jnz printloop
+    
     ret
